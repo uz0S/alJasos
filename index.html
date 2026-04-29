@@ -8,7 +8,6 @@
         :root {
             --primary: #6c5ce7;
             --secondary: #a29bfe;
-            --accent: #fd79a8;
             --bg: #0f0c29;
             --glass: rgba(255, 255, 255, 0.1);
         }
@@ -22,12 +21,11 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
         }
 
         .container {
             width: 90%;
-            max-width: 500px;
+            max-width: 450px;
             background: var(--glass);
             backdrop-filter: blur(15px);
             border-radius: 24px;
@@ -38,115 +36,96 @@
         }
 
         .screen { display: none; }
-        .screen.active { display: block; animation: fadeIn 0.5s ease; }
+        .screen.active { display: block; animation: fadeIn 0.4s ease; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        h1 { font-size: 2rem; margin-bottom: 20px; color: var(--secondary); }
-
-        .input-group { margin-bottom: 20px; display: flex; gap: 10px; }
-
         input, select {
-            flex: 1;
+            width: 100%;
             padding: 12px;
+            margin: 10px 0;
             border-radius: 12px;
             border: none;
             background: rgba(255, 255, 255, 0.1);
             color: white;
-            outline: none;
+            box-sizing: border-box;
         }
 
         button {
-            padding: 12px 25px;
+            width: 100%;
+            padding: 14px;
             border-radius: 12px;
             border: none;
             background: var(--primary);
             color: white;
             font-weight: bold;
             cursor: pointer;
+            margin-top: 10px;
             transition: 0.3s;
         }
 
-        button:hover { transform: scale(1.05); background: var(--secondary); }
+        button:hover { background: var(--secondary); transform: scale(1.02); }
 
-        ul { list-style: none; padding: 0; max-height: 150px; overflow-y: auto; }
-        li {
-            background: rgba(255, 255, 255, 0.05);
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
+        ul { list-style: none; padding: 0; text-align: right; }
+        li { background: rgba(255, 255, 255, 0.05); padding: 10px; margin: 5px 0; border-radius: 8px; display: flex; justify-content: space-between; }
 
         .loader {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--accent);
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 30px; height: 30px;
             animation: spin 1s linear infinite;
-            margin: 10px auto;
+            margin: 15px auto;
             display: none;
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .role-box {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 40px 0;
-            padding: 20px;
-            border-radius: 15px;
-            background: rgba(0,0,0,0.2);
-        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="setup-screen" class="screen active">
-        <h1>🕵️‍♂️ لعبة الجاسوس</h1>
-        <div class="input-group">
+        <h1>🕵️‍♂️ الجاسوس</h1>
+        <div style="display: flex; gap: 5px;">
             <input type="text" id="player-name" placeholder="اسم اللاعب...">
-            <button onclick="addPlayer()">إضافة</button>
+            <button onclick="addPlayer()" style="width: auto;">+</button>
         </div>
         <ul id="players-list"></ul>
         
         <div id="game-settings" style="display:none;">
             <select id="category">
                 <option value="حيوانات">حيوانات</option>
-                <option value="فواكه">فواكه</option>
-                <option value="دول">دول</option>
-                <option value="أدوات مطبخ">أدوات مطبخ</option>
+                <option value="أكلات">أكلات</option>
+                <option value="دول عربية">دول عربية</option>
+                <option value="أدوات منزلية">أدوات منزلية</option>
             </select>
-            <br><br>
-            <button id="start-btn" onclick="startGame()" style="width: 100%;">ابدأ اللعبة 🚀</button>
+            <button id="start-btn" onclick="startGame()">ابدأ اللعبة 🚀</button>
             <div id="ai-loading" class="loader"></div>
         </div>
     </div>
 
     <div id="pass-screen" class="screen">
         <h2 id="turn-text"></h2>
-        <p>لا تجعل أحداً يرى هاتفك!</p>
-        <button onclick="showRole()">اكشف هويتي</button>
+        <p>لا تشاهد الكلمة إلا لوحدك!</p>
+        <button onclick="showRole()">اكشف الكلمة</button>
     </div>
 
     <div id="role-screen" class="screen">
-        <h3>هويتك هي:</h3>
-        <div id="role-display" class="role-box"></div>
-        <button onclick="nextPlayer()">فهمت!</button>
+        <h3>كلمتك هي:</h3>
+        <h1 id="role-display" style="font-size: 2.5rem; margin: 30px 0;"></h1>
+        <button onclick="nextPlayer()">تم، اخفِ الكلمة</button>
     </div>
 
     <div id="timer-screen" class="screen">
-        <h1>ابدأوا النقاش! 🗣️</h1>
-        <p>حاولوا معرفة الجاسوس قبل فوات الأوان.</p>
-        <button onclick="restartGame()" style="background: var(--accent);">لعبة جديدة</button>
+        <h1>ابدأوا الكلام! 🗣️</h1>
+        <p>الجاسوس يحاول التخفي والبقية يحاولون كشفه.</p>
+        <button onclick="restartGame()">لعبة جديدة 🔄</button>
     </div>
 </div>
 
 <script>
-    const GEMINI_API_KEY = 'AIzaSyAvo2K-ECMnYfbaemIu2oh8kzg1rfMhMUc'; // تذكر حمايته لاحقاً
+    const GEMINI_API_KEY = 'AIzaSyAvo2K-ECMnYfbaemIu2oh8kzg1rfMhMUc';
     let players = [];
     let spyIndex = -1;
     let currentWord = '';
@@ -164,17 +143,15 @@
             players.push(name);
             const list = document.getElementById('players-list');
             const li = document.createElement('li');
-            li.innerHTML = `<span>${name}</span> <span style="cursor:pointer" onclick="removePlayer('${name}', this)">❌</span>`;
+            li.innerHTML = `<span>${name}</span> <span style="cursor:pointer" onclick="this.parentElement.remove(); players.splice(players.indexOf('${name}'),1); checkMinPlayers()">❌</span>`;
             list.appendChild(li);
             input.value = '';
-            if (players.length >= 3) document.getElementById('game-settings').style.display = 'block';
+            checkMinPlayers();
         }
     }
 
-    function removePlayer(name, el) {
-        players = players.filter(p => p !== name);
-        el.parentElement.remove();
-        if (players.length < 3) document.getElementById('game-settings').style.display = 'none';
+    function checkMinPlayers() {
+        document.getElementById('game-settings').style.display = players.length >= 3 ? 'block' : 'none';
     }
 
     async function startGame() {
@@ -193,10 +170,12 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
+
+            if (!res.ok) throw new Error();
             const data = await res.json();
             currentWord = data.candidates[0].content.parts[0].text.trim();
-        } catch (e) {
-            currentWord = "بيتزا"; 
+        } catch (error) {
+            currentWord = "بيتزا"; // كلمة احتياطية
         }
 
         loader.style.display = 'none';
@@ -215,10 +194,9 @@
     }
 
     function showRole() {
-        if (window.navigator.vibrate) window.navigator.vibrate(50);
         const display = document.getElementById('role-display');
         if (currentPlayerIndex === spyIndex) {
-            display.innerText = "الجاسوس 🕵️‍♂️";
+            display.innerText = "أنت الجاسوس 🕵️‍♂️";
             display.style.color = "#ff7675";
         } else {
             display.innerText = currentWord;
@@ -235,10 +213,9 @@
     function restartGame() {
         players = [];
         document.getElementById('players-list').innerHTML = '';
-        document.getElementById('game-settings').style.display = 'none';
+        checkMinPlayers();
         showScreen('setup-screen');
     }
 </script>
-
 </body>
 </html>
