@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة الجاسوس الذكية 🕵️‍♂️</title>
+    <title>لعبة الجاسوس 🕵️‍♂️</title>
     <style>
         :root {
-            --primary: #6c5ce7;
-            --secondary: #a29bfe;
-            --bg: #0f0c29;
-            --glass: rgba(255, 255, 255, 0.1);
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #8b5cf6;
+            --secondary: #d946ef;
+            --text: #f8fafc;
+            --danger: #ef4444;
+            --success: #22c55e;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            color: white;
+            background-color: var(--bg-color);
+            color: var(--text);
             margin: 0;
             display: flex;
             justify-content: center;
@@ -26,115 +29,161 @@
         .container {
             width: 90%;
             max-width: 450px;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .screen { display: none; }
-        .screen.active { display: block; animation: fadeIn 0.4s ease; }
+        .screen { display: none; text-align: center; }
+        .screen.active { display: block; animation: slideUp 0.4s ease-out; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        input, select {
-            width: 100%;
+        h1 { font-size: 2rem; color: var(--primary); margin-bottom: 10px; }
+        p { color: #94a3b8; line-height: 1.6; }
+
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input {
+            flex: 1;
             padding: 12px;
-            margin: 10px 0;
-            border-radius: 12px;
-            border: none;
-            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 2px solid #334155;
+            background: #0f172a;
             color: white;
-            box-sizing: border-box;
+            font-size: 1rem;
         }
 
-        button {
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            border: none;
+        .btn {
             background: var(--primary);
             color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
             transition: 0.3s;
         }
 
-        button:hover { background: var(--secondary); transform: scale(1.02); }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-secondary { background: var(--secondary); }
+        .btn-danger { background: var(--danger); padding: 5px 10px; }
 
-        ul { list-style: none; padding: 0; text-align: right; }
-        li { background: rgba(255, 255, 255, 0.05); padding: 10px; margin: 5px 0; border-radius: 8px; display: flex; justify-content: space-between; }
-
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            width: 30px; height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 15px auto;
-            display: none;
+        ul { list-style: none; padding: 0; margin: 20px 0; max-height: 150px; overflow-y: auto; }
+        li {
+            background: #334155;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .category-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cat-item {
+            background: #334155;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: 0.3s;
+        }
+
+        .cat-item.selected {
+            border-color: var(--primary);
+            background: #475569;
+        }
+
+        .role-box {
+            font-size: 2.5rem;
+            margin: 40px 0;
+            padding: 20px;
+            border: 2px dashed var(--primary);
+            border-radius: 15px;
+            background: #0f172a;
+        }
+
+        .instruction { font-size: 1.2rem; margin-bottom: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="setup-screen" class="screen active">
-        <h1>🕵️‍♂️ الجاسوس</h1>
-        <div style="display: flex; gap: 5px;">
+        <h1>🕵️‍♂️ مين الجاسوس؟</h1>
+        <p>أضف 3 لاعبين على الأقل للبدء</p>
+        
+        <div class="input-group">
             <input type="text" id="player-name" placeholder="اسم اللاعب...">
-            <button onclick="addPlayer()" style="width: auto;">+</button>
+            <button class="btn" onclick="addPlayer()">إضافة</button>
         </div>
+        
         <ul id="players-list"></ul>
         
-        <div id="game-settings" style="display:none;">
-            <select id="category">
-                <option value="حيوانات">حيوانات</option>
-                <option value="أكلات">أكلات</option>
-                <option value="دول عربية">دول عربية</option>
-                <option value="أدوات منزلية">أدوات منزلية</option>
-            </select>
-            <button id="start-btn" onclick="startGame()">ابدأ اللعبة 🚀</button>
-            <div id="ai-loading" class="loader"></div>
+        <div id="game-options" style="display:none;">
+            <h3>اختر الفئة:</h3>
+            <div class="category-grid" id="category-selector">
+                <div class="cat-item selected" onclick="selectCategory('حيوانات', this)">🐘 حيوانات</div>
+                <div class="cat-item" onclick="selectCategory('أكلات', this)">🍕 أكلات</div>
+                <div class="cat-item" onclick="selectCategory('دول', this)">🌍 دول</div>
+                <div class="cat-item" onclick="selectCategory('أشياء', this)">🎒 أشياء</div>
+                <div class="cat-item" onclick="selectCategory('مهن', this)">👨‍⚕️ مهن</div>
+                <div class="cat-item" onclick="selectCategory('رياضة', this)">⚽ رياضة</div>
+            </div>
+            <button class="btn btn-secondary" style="width: 100%;" onclick="startGame()">ابدأ اللعب 🚀</button>
         </div>
     </div>
 
     <div id="pass-screen" class="screen">
-        <h2 id="turn-text"></h2>
-        <p>لا تشاهد الكلمة إلا لوحدك!</p>
-        <button onclick="showRole()">اكشف الكلمة</button>
+        <p class="instruction">دور اللاعب:</p>
+        <h1 id="turn-text" style="color: var(--secondary);"></h1>
+        <p>مرر الجهاز لهذا اللاعب، واضغط الزر بالأسفل</p>
+        <button class="btn" onclick="showRole()">اكشف الكلمة 👁️</button>
     </div>
 
     <div id="role-screen" class="screen">
-        <h3>كلمتك هي:</h3>
-        <h1 id="role-display" style="font-size: 2.5rem; margin: 30px 0;"></h1>
-        <button onclick="nextPlayer()">تم، اخفِ الكلمة</button>
+        <h3>هويتك هي:</h3>
+        <div id="role-display" class="role-box"></div>
+        <p>تذكر الكلمة جيداً ولا تخبرها لأحد!</p>
+        <button class="btn btn-secondary" onclick="nextPlayer()">فهمت ✅</button>
     </div>
 
-    <div id="timer-screen" class="screen">
-        <h1>ابدأوا الكلام! 🗣️</h1>
-        <p>الجاسوس يحاول التخفي والبقية يحاولون كشفه.</p>
-        <button onclick="restartGame()">لعبة جديدة 🔄</button>
+    <div id="play-screen" class="screen">
+        <h1 style="color: var(--success);">بدأ التحدي! 🗣️</h1>
+        <div class="role-box" style="font-size: 1.2rem; border-style: solid;">
+            ابدأوا بسؤال بعضكم البعض أسئلة ذكية لكشف الجاسوس.
+        </div>
+        <button class="btn btn-danger" onclick="location.reload()">لعبة جديدة 🔄</button>
     </div>
 </div>
 
 <script>
-    const GEMINI_API_KEY = 'AIzaSyAvo2K-ECMnYfbaemIu2oh8kzg1rfMhMUc';
+    // مخزون الكلمات الكبير
+    const wordBank = {
+        "حيوانات": ["أسد", "فيل", "زرافة", "نمر", "تمساح", "قرد", "بطريق", "جمل", "ذئب", "ثعلب", "أرنب", "سنجاب", "دولفين", "حوت", "قرش", "بومة", "نسر", "نعامة", "كنغر", "خفاش"],
+        "أكلات": ["بيتزا", "برجر", "شاورما", "منسف", "كبسة", "كشري", "ملوخية", "باستا", "سوشي", "ورق عنب", "حمص", "فلافل", "كنافة", "بقلاوة", "تفاح", "مانجو", "بطيخ", "كريب", "شوربة"],
+        "دول": ["مصر", "السعودية", "الأردن", "فلسطين", "المغرب", "الإمارات", "الكويت", "قطر", "سوريا", "لبنان", "فرنسا", "إيطاليا", "اليابان", "الصين", "تركيا", "إسبانيا", "البرازيل", "تونس"],
+        "أشياء": ["مفتاح", "هاتف", "طاولة", "كرسي", "نظارة", "ساعة", "كتاب", "قلم", "فرشاة أسنان", "مرآة", "محفظة", "مظلة", "كاميرا", "تلفاز", "مصباح", "ملعقة", "وسادة", "حقيبة"],
+        "مهن": ["طبيب", "مهندس", "معلم", "نجار", "حداد", "طيار", "محامي", "شرطي", "رائد فضاء", "مبرمج", "محاسب", "خياط", "جزار", "حلاق", "صحفي", "مزارع", "رسام", "طباخ"],
+        "رياضة": ["كرة القدم", "كرة السلة", "السباحة", "التنس", "الملاكمة", "الجري", "المبارزة", "الجمباز", "رماية", "كرة الطائرة", "الكاراتيه", "الغولف", "اليوجا", "تسلق الجبال"]
+    };
+
     let players = [];
     let spyIndex = -1;
     let currentWord = '';
     let currentPlayerIndex = 0;
-
-    function showScreen(screenId) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-    }
+    let selectedCategory = 'حيوانات';
 
     function addPlayer() {
         const input = document.getElementById('player-name');
@@ -143,79 +192,72 @@
             players.push(name);
             const list = document.getElementById('players-list');
             const li = document.createElement('li');
-            li.innerHTML = `<span>${name}</span> <span style="cursor:pointer" onclick="this.parentElement.remove(); players.splice(players.indexOf('${name}'),1); checkMinPlayers()">❌</span>`;
+            li.innerHTML = `<span>${name}</span> <button class="btn-danger" onclick="removePlayer('${name}', this)">X</button>`;
             list.appendChild(li);
             input.value = '';
-            checkMinPlayers();
+            toggleGameOptions();
         }
     }
 
-    function checkMinPlayers() {
-        document.getElementById('game-settings').style.display = players.length >= 3 ? 'block' : 'none';
+    function removePlayer(name, el) {
+        players = players.filter(p => p !== name);
+        el.parentElement.remove();
+        toggleGameOptions();
     }
 
-    async function startGame() {
-        const loader = document.getElementById('ai-loading');
-        const btn = document.getElementById('start-btn');
-        loader.style.display = 'block';
-        btn.style.display = 'none';
+    function toggleGameOptions() {
+        document.getElementById('game-options').style.display = players.length >= 3 ? 'block' : 'none';
+    }
 
+    function selectCategory(cat, el) {
+        selectedCategory = cat;
+        document.querySelectorAll('.cat-item').forEach(item => item.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    function startGame() {
+        // اختيار الجاسوس
         spyIndex = Math.floor(Math.random() * players.length);
-        const category = document.getElementById('category').value;
+        // اختيار كلمة عشوائية من الفئة
+        const words = wordBank[selectedCategory];
+        currentWord = words[Math.floor(Math.random() * words.length)];
         
-        try {
-            const prompt = `أعطني اسم شيء واحد فقط ينتمي لفئة ${category} باللغة العربية، بدون شرح، كلمة واحدة فقط.`;
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-            });
-
-            if (!res.ok) throw new Error();
-            const data = await res.json();
-            currentWord = data.candidates[0].content.parts[0].text.trim();
-        } catch (error) {
-            currentWord = "بيتزا"; // كلمة احتياطية
-        }
-
-        loader.style.display = 'none';
-        btn.style.display = 'block';
         currentPlayerIndex = 0;
-        startPassing();
+        showScreen('pass-screen');
+        updateTurnText();
     }
 
-    function startPassing() {
-        if (currentPlayerIndex < players.length) {
-            document.getElementById('turn-text').innerText = `مرر الجهاز لـ : ${players[currentPlayerIndex]}`;
-            showScreen('pass-screen');
-        } else {
-            showScreen('timer-screen');
-        }
+    function updateTurnText() {
+        document.getElementById('turn-text').innerText = players[currentPlayerIndex];
     }
 
     function showRole() {
         const display = document.getElementById('role-display');
         if (currentPlayerIndex === spyIndex) {
             display.innerText = "أنت الجاسوس 🕵️‍♂️";
-            display.style.color = "#ff7675";
+            display.style.color = "var(--danger)";
         } else {
             display.innerText = currentWord;
-            display.style.color = "#55efc4";
+            display.style.color = "var(--success)";
         }
         showScreen('role-screen');
     }
 
     function nextPlayer() {
         currentPlayerIndex++;
-        startPassing();
+        if (currentPlayerIndex < players.length) {
+            updateTurnText();
+            showScreen('pass-screen');
+        } else {
+            showScreen('play-screen');
+        }
     }
 
-    function restartGame() {
-        players = [];
-        document.getElementById('players-list').innerHTML = '';
-        checkMinPlayers();
-        showScreen('setup-screen');
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
     }
 </script>
+
 </body>
 </html>
