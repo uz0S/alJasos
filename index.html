@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spy Game AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- شاشة البداية -->
+        <div id="setup-screen" class="screen active">
+            <h1>جاسوس 🕵️‍♂️</h1>
+            <p style="opacity: 0.7;">لعبة الذكاء والتمويه</p>
+            
+            <div class="input-group">
+                <input type="text" id="player-name" placeholder="اسم اللاعب المبدع...">
+                <button onclick="addPlayer()">إضافة لاعب +</button>
+            </div>
+            
+            <ul id="players-list"></ul>
+            
+            <div id="game-settings" style="display: none;">
+                <label style="display:block; margin-top:20px;">اختر العالم الذي ستلعبون فيه:</label>
+                <select id="category">
+                    <option value="أماكن عامة">🏢 أماكن عامة</option>
+                    <option value="حيوانات">🐘 عالم الحيوان</option>
+                    <option value="أفلام كرتون">🎬 أفلام كرتون</option>
+                    <option value="طعام وأطباق">🍕 أكلات شهية</option>
+                    <option value="مهن غريبة">👷 مهن ووظائف</option>
+                </select>
+                <button id="start-btn" onclick="startGame()" style="background: var(--success); color: #000;">بدء المهمة 🚀</button>
+                <div id="ai-loading" style="display: none;">
+                    <div class="loader"></div>
+                    <p>الذكاء الاصطناعي يختار الكلمة...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- شاشة التمرير -->
+        <div id="pass-screen" class="screen">
+            <h2 style="font-size: 1.5rem;">سري للغاية! 🤫</h2>
+            <div style="font-size: 4rem; margin: 20px 0;">📱</div>
+            <p id="turn-text" style="font-size: 1.2rem; font-weight: bold;"></p>
+            <button onclick="showRole()">أنا المستلم (كشف السر)</button>
+        </div>
+
+        <!-- شاشة الدور -->
+        <div id="role-screen" class="screen">
+            <h2 style="opacity: 0.8;">معلومتك السرية:</h2>
+            <div id="role-display"></div>
+            <div style="background: rgba(255, 118, 117, 0.1); padding: 10px; border-radius: 10px; color: var(--danger); font-weight: bold;">
+                ⚠️ لا تدع أحداً يرى الشاشة!
+            </div>
+            <button onclick="nextPlayer()" style="margin-top: 20px;">حفظت الكلمة (مرر)</button>
+        </div>
+
+        <!-- شاشة اللعب -->
+        <div id="timer-screen" class="screen">
+            <h1 style="color: var(--success);">انطلقوا! 🏁</h1>
+            <p>الآن ابحثوا عن الجاسوس بينكم بالأسئلة والذكاء.</p>
+            <div style="font-size: 5rem; margin: 30px 0;">🕵️‍♀️</div>
+            <button onclick="restartGame()" style="background: var(--danger);">لعبة جديدة 🔄</button>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
