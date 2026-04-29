@@ -3,68 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spy Game AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>لعبة الجاسوس الذكية 🕵️‍♂️</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --bg: #0f0c29;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.5s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 2rem; margin-bottom: 20px; color: var(--secondary); }
+
+        .input-group { margin-bottom: 20px; display: flex; gap: 10px; }
+
+        input, select {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 25px;
+            border-radius: 12px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover { transform: scale(1.05); background: var(--secondary); }
+
+        ul { list-style: none; padding: 0; max-height: 150px; overflow-y: auto; }
+        li {
+            background: rgba(255, 255, 255, 0.05);
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+            display: none;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .role-box {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 40px 0;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(0,0,0,0.2);
+        }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <!-- شاشة البداية -->
-        <div id="setup-screen" class="screen active">
-            <h1>جاسوس 🕵️‍♂️</h1>
-            <p style="opacity: 0.7;">لعبة الذكاء والتمويه</p>
-            
-            <div class="input-group">
-                <input type="text" id="player-name" placeholder="اسم اللاعب المبدع...">
-                <button onclick="addPlayer()">إضافة لاعب +</button>
-            </div>
-            
-            <ul id="players-list"></ul>
-            
-            <div id="game-settings" style="display: none;">
-                <label style="display:block; margin-top:20px;">اختر العالم الذي ستلعبون فيه:</label>
-                <select id="category">
-                    <option value="أماكن عامة">🏢 أماكن عامة</option>
-                    <option value="حيوانات">🐘 عالم الحيوان</option>
-                    <option value="أفلام كرتون">🎬 أفلام كرتون</option>
-                    <option value="طعام وأطباق">🍕 أكلات شهية</option>
-                    <option value="مهن غريبة">👷 مهن ووظائف</option>
-                </select>
-                <button id="start-btn" onclick="startGame()" style="background: var(--success); color: #000;">بدء المهمة 🚀</button>
-                <div id="ai-loading" style="display: none;">
-                    <div class="loader"></div>
-                    <p>الذكاء الاصطناعي يختار الكلمة...</p>
-                </div>
-            </div>
-        </div>
 
-        <!-- شاشة التمرير -->
-        <div id="pass-screen" class="screen">
-            <h2 style="font-size: 1.5rem;">سري للغاية! 🤫</h2>
-            <div style="font-size: 4rem; margin: 20px 0;">📱</div>
-            <p id="turn-text" style="font-size: 1.2rem; font-weight: bold;"></p>
-            <button onclick="showRole()">أنا المستلم (كشف السر)</button>
+<div class="container">
+    <div id="setup-screen" class="screen active">
+        <h1>🕵️‍♂️ لعبة الجاسوس</h1>
+        <div class="input-group">
+            <input type="text" id="player-name" placeholder="اسم اللاعب...">
+            <button onclick="addPlayer()">إضافة</button>
         </div>
-
-        <!-- شاشة الدور -->
-        <div id="role-screen" class="screen">
-            <h2 style="opacity: 0.8;">معلومتك السرية:</h2>
-            <div id="role-display"></div>
-            <div style="background: rgba(255, 118, 117, 0.1); padding: 10px; border-radius: 10px; color: var(--danger); font-weight: bold;">
-                ⚠️ لا تدع أحداً يرى الشاشة!
-            </div>
-            <button onclick="nextPlayer()" style="margin-top: 20px;">حفظت الكلمة (مرر)</button>
-        </div>
-
-        <!-- شاشة اللعب -->
-        <div id="timer-screen" class="screen">
-            <h1 style="color: var(--success);">انطلقوا! 🏁</h1>
-            <p>الآن ابحثوا عن الجاسوس بينكم بالأسئلة والذكاء.</p>
-            <div style="font-size: 5rem; margin: 30px 0;">🕵️‍♀️</div>
-            <button onclick="restartGame()" style="background: var(--danger);">لعبة جديدة 🔄</button>
+        <ul id="players-list"></ul>
+        
+        <div id="game-settings" style="display:none;">
+            <select id="category">
+                <option value="حيوانات">حيوانات</option>
+                <option value="فواكه">فواكه</option>
+                <option value="دول">دول</option>
+                <option value="أدوات مطبخ">أدوات مطبخ</option>
+            </select>
+            <br><br>
+            <button id="start-btn" onclick="startGame()" style="width: 100%;">ابدأ اللعبة 🚀</button>
+            <div id="ai-loading" class="loader"></div>
         </div>
     </div>
 
-    <script src="main.js"></script>
+    <div id="pass-screen" class="screen">
+        <h2 id="turn-text"></h2>
+        <p>لا تجعل أحداً يرى هاتفك!</p>
+        <button onclick="showRole()">اكشف هويتي</button>
+    </div>
+
+    <div id="role-screen" class="screen">
+        <h3>هويتك هي:</h3>
+        <div id="role-display" class="role-box"></div>
+        <button onclick="nextPlayer()">فهمت!</button>
+    </div>
+
+    <div id="timer-screen" class="screen">
+        <h1>ابدأوا النقاش! 🗣️</h1>
+        <p>حاولوا معرفة الجاسوس قبل فوات الأوان.</p>
+        <button onclick="restartGame()" style="background: var(--accent);">لعبة جديدة</button>
+    </div>
+</div>
+
+<script>
+    const GEMINI_API_KEY = 'AIzaSyAvo2K-ECMnYfbaemIu2oh8kzg1rfMhMUc'; // تذكر حمايته لاحقاً
+    let players = [];
+    let spyIndex = -1;
+    let currentWord = '';
+    let currentPlayerIndex = 0;
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+    }
+
+    function addPlayer() {
+        const input = document.getElementById('player-name');
+        const name = input.value.trim();
+        if (name) {
+            players.push(name);
+            const list = document.getElementById('players-list');
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${name}</span> <span style="cursor:pointer" onclick="removePlayer('${name}', this)">❌</span>`;
+            list.appendChild(li);
+            input.value = '';
+            if (players.length >= 3) document.getElementById('game-settings').style.display = 'block';
+        }
+    }
+
+    function removePlayer(name, el) {
+        players = players.filter(p => p !== name);
+        el.parentElement.remove();
+        if (players.length < 3) document.getElementById('game-settings').style.display = 'none';
+    }
+
+    async function startGame() {
+        const loader = document.getElementById('ai-loading');
+        const btn = document.getElementById('start-btn');
+        loader.style.display = 'block';
+        btn.style.display = 'none';
+
+        spyIndex = Math.floor(Math.random() * players.length);
+        const category = document.getElementById('category').value;
+        
+        try {
+            const prompt = `أعطني اسم شيء واحد فقط ينتمي لفئة ${category} باللغة العربية، بدون شرح، كلمة واحدة فقط.`;
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            const data = await res.json();
+            currentWord = data.candidates[0].content.parts[0].text.trim();
+        } catch (e) {
+            currentWord = "بيتزا"; 
+        }
+
+        loader.style.display = 'none';
+        btn.style.display = 'block';
+        currentPlayerIndex = 0;
+        startPassing();
+    }
+
+    function startPassing() {
+        if (currentPlayerIndex < players.length) {
+            document.getElementById('turn-text').innerText = `مرر الجهاز لـ : ${players[currentPlayerIndex]}`;
+            showScreen('pass-screen');
+        } else {
+            showScreen('timer-screen');
+        }
+    }
+
+    function showRole() {
+        if (window.navigator.vibrate) window.navigator.vibrate(50);
+        const display = document.getElementById('role-display');
+        if (currentPlayerIndex === spyIndex) {
+            display.innerText = "الجاسوس 🕵️‍♂️";
+            display.style.color = "#ff7675";
+        } else {
+            display.innerText = currentWord;
+            display.style.color = "#55efc4";
+        }
+        showScreen('role-screen');
+    }
+
+    function nextPlayer() {
+        currentPlayerIndex++;
+        startPassing();
+    }
+
+    function restartGame() {
+        players = [];
+        document.getElementById('players-list').innerHTML = '';
+        document.getElementById('game-settings').style.display = 'none';
+        showScreen('setup-screen');
+    }
+</script>
+
 </body>
 </html>
